@@ -1,0 +1,39 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1704.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{F9FB892F-3214-454D-ACFB-2F01E8AA7D3D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{885C4F5B-B15B-4D25-8C93-2755EBD47A3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeekShopping.Web", "GeekShopping.Web\GeekShopping.Web.csproj", "{2E24EA64-A0AB-466A-9743-87BD82C13798}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeekShopping.ProductAPI", "GeekShopping.ProductAPI\GeekShopping.ProductAPI.csproj", "{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E24EA64-A0AB-466A-9743-87BD82C13798}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E24EA64-A0AB-466A-9743-87BD82C13798}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E24EA64-A0AB-466A-9743-87BD82C13798}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E24EA64-A0AB-466A-9743-87BD82C13798}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9500C204-2D60-4CE3-96B6-2C5DA5765BDA}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E24EA64-A0AB-466A-9743-87BD82C13798} = {F9FB892F-3214-454D-ACFB-2F01E8AA7D3D}
+		{5435C8E5-5799-49A5-A9B5-4BBAFF6994F1} = {885C4F5B-B15B-4D25-8C93-2755EBD47A3F}
+	EndGlobalSection
+EndGlobal
