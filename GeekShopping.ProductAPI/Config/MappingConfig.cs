@@ -10,7 +10,7 @@ public class MappingConfig
   {
     var mappingConfig = new MapperConfiguration(cfg =>
     {
-      cfg.CreateMap<ProductVO, Product>().ReverseMap();
+      cfg.CreateMap<ProductVo, Product>().ReverseMap();
     });
     return mappingConfig;
   }

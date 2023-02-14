@@ -1,6 +1,8 @@
-﻿using GeekShopping.ProductAPI.Config;
+﻿using FluentValidation;
+using GeekShopping.ProductAPI.Config;
 using GeekShopping.ProductAPI.Models.Context;
 using GeekShopping.ProductAPI.Repositories;
+using GeekShopping.ProductAPI.Validators;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +15,11 @@ var mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddValidatorsFromAssemblyContaining<ProductValidator>(ServiceLifetime.Transient);
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+builder.Services.Configure<RouteOptions>(opts => opts.LowercaseUrls = true);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
