@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeekShopping.ProductAPI.Models.Context;
 
-public class PostgresContext : DbContext
+public sealed class PostgresContext : DbContext
 {
 	public PostgresContext()
 	{
