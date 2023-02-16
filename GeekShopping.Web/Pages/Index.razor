@@ -1,0 +1,50 @@
+﻿@page "/"
+@inject ISnackbar Snackbar
+@inject IProductService Service
+
+<PageTitle>GeekShopping | Loja</PageTitle>
+
+@if (_loading)
+{
+  <MudProgressCircular
+    Class="d-flex align-self-center"
+    Color="Color.Default"
+    Indeterminate="true" />
+}
+else
+{
+  <MudText Typo="Typo.h5" Class="mt-1 pa-4">Products</MudText>
+  <MudGrid Class="pa-2" Justify="Justify.FlexStart">
+    @foreach (var product in _products)
+    {
+      <MudItem xs="4">
+        <ProductCard Product="product" />       
+      </MudItem>
+    }
+  </MudGrid>
+}
+
+@code
+{
+  private bool _loading = true;
+  private IEnumerable<ProductModel> _products = Array.Empty<ProductModel>();
+  
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+  
+    try
+    {
+      _loading = true;
+      _products = await Service.FindAllProducts();
+    }
+    catch (Exception)
+    {
+      Snackbar.Add("Não foi possível carregar os produtos!", Severity.Error);
+    }
+    finally
+    {
+      _loading = false;
+    }
+  }
+}

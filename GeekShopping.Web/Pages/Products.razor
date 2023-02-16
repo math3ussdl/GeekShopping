@@ -1,0 +1,96 @@
+@page "/products"
+@inject ISnackbar Snackbar
+@inject IProductService Service
+@inject NavigationManager Navigation
+
+<PageTitle>GeekShopping | Gerenciamento de Produtos</PageTitle>
+
+<MudStack Row="true" Class="pa-4">
+  <MudText Typo="Typo.h5">Produtos</MudText>
+  <MudButton
+    Variant="Variant.Filled"
+    Color="Color.Success"
+    StartIcon="@Icons.Material.Outlined.Add"
+    OnClick="@(_ => NavigateToDetails("create"))">
+    Novo produto
+  </MudButton>
+</MudStack>
+
+<MudTable
+  Items="_products.Take(6).OrderBy(x => x.Id)"
+  Hover="true"
+  Breakpoint="Breakpoint.Sm"
+  Loading="@_loading"
+  LoadingProgressColor="Color.Info">
+  
+  <HeaderContent>
+    <MudTh>Id</MudTh>
+    <MudTh>Nome</MudTh>
+    <MudTh>Preço</MudTh>
+    <MudTh>Categoria</MudTh>
+    <MudTh>Descrição</MudTh>
+    <MudTh>Ações</MudTh>
+  </HeaderContent>
+  
+  <RowTemplate>
+    <MudTd DataLabel="Id">@context.Id</MudTd>
+    <MudTd DataLabel="Nome">@context.Name</MudTd>
+    <MudTd DataLabel="Preço">R$ @context.Price.ToString("N2")</MudTd>
+    <MudTd DataLabel="Categoria">@context.CategoryName</MudTd>
+    <MudTd DataLabel="Descrição">@context.Description</MudTd>
+    <MudTd DataLabel="Ações">
+      <MudStack Row="true">
+        @if (context.Id is not null)
+        {
+          <MudIconButton
+            Icon="@Icons.Material.Filled.Edit"
+            Color="Color.Info"
+            Edge="Edge.Start"
+            Class="pa-3"
+            OnClick="@(
+              _ => NavigateToDetails("edit", context.Id ?? throw new ArgumentException("Invalid ID!"))
+            )"/>
+
+          <MudIconButton
+            Icon="@Icons.Material.Filled.Delete"
+            Color="Color.Error"
+            Edge="Edge.Start"
+            Class="pa-3"
+            OnClick="@(
+              _ => NavigateToDetails("delete", context.Id ?? throw new ArgumentException("Invalid ID!"))
+            )"/>
+        }
+      </MudStack>
+    </MudTd>
+  </RowTemplate>
+</MudTable>
+
+@code {
+  private bool _loading;
+  private IEnumerable<ProductModel> _products = Array.Empty<ProductModel>();
+
+  private void NavigateToDetails(string action, long? id = null)
+  {
+    var path = $"/products/{action}";
+    Navigation.NavigateTo(id is not null ? path + $"/{id}" : path);
+  }
+  
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+
+    try
+    {
+      _loading = true;
+      _products = await Service.FindAllProducts();
+    }
+    catch (Exception)
+    {
+      Snackbar.Add("Não foi possível carregar os produtos!", Severity.Error);
+    }
+    finally
+    {
+      _loading = false;
+    }
+  }
+}

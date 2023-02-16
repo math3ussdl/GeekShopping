@@ -1,0 +1,178 @@
+@page "/products/{Action}"
+@page "/products/{Action}/{Id:long}"
+
+@inject IProductService Service
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+@inject NavigationManager Navigation
+
+@if (_loading)
+{
+  <MudProgressCircular
+    Class="d-flex align-self-center"
+    Color="Color.Default"
+    Indeterminate="true" />
+}
+else
+{
+  <MudText Typo="Typo.h5" Class="mt-1 pa-4">
+    @GetHeaderByAction() @_formData.Name
+  </MudText>
+  
+  <EditForm Model="@_formData" OnValidSubmit="OnValidSubmit">
+    <MudStack Row="true" Class="pa-4">
+      <MudTextField
+        Label="Nome"
+        HelperText="Max. 50 caracteres"
+        disabled="@(!_isEdit && !_isCreate)"
+        @bind-Value="_formData.Name"
+        For="@(() => _formData.Name)" />
+      
+      <MudTextField
+        T="decimal"
+        Label="Preço"
+        disabled="@(!_isEdit && !_isCreate)"
+        @bind-Value="_formData.Price"
+        For="@(() => _formData.Price)" />
+    </MudStack>
+    
+    <MudTextField
+      Class="pa-4"
+      Label="Descrição"
+      HelperText="Max. 500 caracteres"
+      disabled="@(!_isEdit && !_isCreate)"
+      @bind-Value="_formData.Description"
+      For="@(() => _formData.Description)" />
+    
+    <MudTextField
+      Class="pa-4"
+      Label="Categoria"
+      HelperText="Max. 50 caracteres"
+      disabled="@(!_isEdit && !_isCreate)"
+      @bind-Value="_formData.CategoryName"
+      For="@(() => _formData.CategoryName)" />
+    
+    <MudTextField
+      Class="pa-4"
+      Label="Imagem"
+      HelperText="Apenas a URL"
+      disabled="@(!_isEdit && !_isCreate)"
+      @bind-Value="_formData.ImageUrl"
+      For="@(() => _formData.ImageUrl)" />
+
+    <MudStack Row="true" Class="pa-4">
+      <MudButton
+        ButtonType="ButtonType.Submit"
+        Variant="Variant.Filled"
+        Color="@(_isEdit ? Color.Primary : _isCreate ? Color.Success : Color.Error)"
+        StartIcon="@(_isEdit || _isCreate ? Icons.Material.Outlined.Save : Icons.Material.Outlined.Delete)">
+        @(_isEdit ? "Salvar" : _isCreate ? "Cadastrar" : "Deletar")
+      </MudButton>
+      
+      <MudButton
+        Variant="Variant.Text"
+        Color="Color.Info"
+        OnClick="@(() => Navigation.NavigateTo("/products"))">
+        Voltar
+      </MudButton>
+    </MudStack>
+  </EditForm>
+}
+
+@code {
+  [Parameter]
+  public string Action { get; set; } = "edit";
+  
+  [Parameter]
+  public long Id { get; set; }
+
+  private bool _loading;
+  private bool _isEdit;
+  private bool _isCreate;
+
+  private ProductModel _formData = new();
+
+  private string GetHeaderByAction()
+  {
+    return Action switch
+    {
+      "edit" => "Editar",
+      "create" => "Cadastrar",
+      _ => "Deletar"
+      };
+  }
+  
+  private async void OnValidSubmit(EditContext context)
+  {
+    try
+    {
+      switch (Action.ToLower())
+      {
+        case "edit":
+          _loading = true;
+          await Service.UpdateProduct(context.Model.As<ProductModel>());
+          Snackbar.Add("Item atualizado com sucesso!", Severity.Success);
+          break;
+          
+        case "create":
+          _loading = true;
+          await Service.CreateProduct(context.Model.As<ProductModel>());
+          Snackbar.Add("Item cadastrado com sucesso!", Severity.Success);
+          break;
+          
+        default:
+          var result = await Dialog.ShowMessageBox(
+            "Excluir produto?",
+            "Esta ação é irreversível! Você tem certeza disso?",
+            yesText: "Deletar",
+            noText: "Cancelar"
+          );
+
+          if (result is not null)
+          {
+            _loading = true;
+            await Service.DeleteProductById(Id);
+            Snackbar.Add("Item deletado com sucesso!", Severity.Success);
+          }
+          break;
+      }
+
+      Navigation.NavigateTo("/products");
+    }
+    catch (Exception)
+    {
+      Snackbar.Add($"Operação '{GetHeaderByAction().ToUpper()}' mal sucedida! Tente novamente.", Severity.Error);
+    }
+    finally
+    {
+      _loading = false;
+    }
+
+    StateHasChanged();
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+
+    _isEdit = Action is "edit";
+    _isCreate = Action is "create";
+
+    if (!_isCreate)
+    {
+      try
+      {
+        _loading = true;
+        _formData = await Service.FindProductById(Id);
+      }
+      catch (Exception)
+      {
+        Snackbar.Add($"Não foi possível carregar o produto com id: {Id}", Severity.Error);
+      }
+      finally
+      {
+        _loading = false;
+      }
+    }
+  }
+}

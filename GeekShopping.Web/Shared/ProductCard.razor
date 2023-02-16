@@ -1,0 +1,20 @@
+<MudCard>
+  <MudCardMedia Image="@Product.ImageUrl" Style="object-fit: contain" Height="200" />
+  <MudCardContent>
+    <MudText Typo="Typo.h5">@Product.Name</MudText>
+    <MudText Typo="Typo.body2">@Product.Description</MudText>
+  </MudCardContent>
+  
+  <MudCardActions>
+    <MudButton
+      Variant="Variant.Text"
+      StartIcon="@Icons.Material.Outlined.AddShoppingCart"
+      Color="Color.Success"
+    >Buy</MudButton>
+  </MudCardActions>
+</MudCard>
+
+@code {
+  [Parameter]
+  public ProductModel Product { get; set; } = default!;
+}

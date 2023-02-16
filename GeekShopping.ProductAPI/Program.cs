@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 builder.Services.AddDbContext<PostgresContext>(opts => opts.UseNpgsql(connectionString));
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
@@ -28,6 +29,15 @@ builder.Services.AddSwaggerGen(s =>
 	s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "GeekShopping.ProductAPI", Version = "v1" });
 });
 
+builder.Services.AddCors(policy =>
+{
+	policy.AddPolicy("_myAllowSpecificOrigins", c => c.WithOrigins("http://localhost:5077/")
+		.SetIsOriginAllowed(h => true)
+		.AllowAnyMethod()
+		.AllowAnyHeader()
+		.AllowCredentials());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+app.UseCors("_myAllowSpecificOrigins");
 
 app.MapControllers();
 

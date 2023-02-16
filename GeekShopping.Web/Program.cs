@@ -1,36 +1,21 @@
-﻿using GeekShopping.Web.Services;
-using GeekShopping.Web.Services.IServices;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using GeekShopping.Web;
+using GeekShopping.Web.Services;
+using GeekShopping.Web.Services.Interfaces;
+using MudBlazor.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Add services to the container.
-builder.Services.AddHttpClient<IProductService, ProductService>(client =>
+builder.Services.AddMudServices();
+
+builder.Services.AddSingleton(sp => new HttpClient
 {
-	client.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"] ?? "http://localhost:5200");
+  BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseUrl") ?? "http://localhost:5200")
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IProductService, ProductService>();
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-		app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
-
+await builder.Build().RunAsync();

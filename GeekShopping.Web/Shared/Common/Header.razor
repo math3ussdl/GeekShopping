@@ -1,0 +1,53 @@
+<MudAppBar Elevation="1">
+  <MudIconButton
+    Icon="@Icons.Material.Filled.Menu"
+    Color="Color.Inherit"
+    Edge="Edge.Start"
+    OnClick="@(_ => ToggleDrawer())" />
+  
+  <MudSpacer />
+  
+  <MudIconButton
+    Icon="@Icons.Material.Filled.ShoppingCart"
+    Color="Color.Inherit"
+    Edge="Edge.End" />
+
+  <MudIconButton
+    Icon="@Icons.Material.Filled.Logout"
+    Color="Color.Tertiary"
+    Edge="Edge.End"
+    Class="ml-2" />
+</MudAppBar>
+
+<MudDrawer @bind-Open="_drawerOpen" Elevation="2">
+  <MudDrawerHeader>
+    <MudText Typo="Typo.h5" Class="mt-1">GeekShopping</MudText>
+  </MudDrawerHeader>
+  
+  <MudNavMenu>
+    <MudNavLink
+      Href="/"
+      Match="NavLinkMatch.All"
+      Icon="@Icons.Material.Outlined.Storefront">
+      Loja
+    </MudNavLink>
+    
+    <MudNavGroup Title="Gerenciamento" Icon="@Icons.Material.Outlined.Settings">
+      <MudNavLink
+        Href="/products"
+        Match="NavLinkMatch.All"
+        Icon="@Icons.Material.Outlined.Inventory2">
+        Produtos
+      </MudNavLink>
+    </MudNavGroup>
+  </MudNavMenu>
+</MudDrawer>
+
+@code {
+  bool _drawerOpen = true;
+
+  void ToggleDrawer()
+  {
+    _drawerOpen = !_drawerOpen;
+  }
+}

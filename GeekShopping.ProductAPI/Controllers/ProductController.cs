@@ -25,7 +25,7 @@ public sealed class ProductController : ControllerBase
 		return Ok(products);
 	}
 
-	[HttpGet("{id}")]
+	[HttpGet("{id:long}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<ProductVo>> FindById(long id)
@@ -40,14 +40,14 @@ public sealed class ProductController : ControllerBase
 	[HttpPost]
 	[ProducesResponseType(StatusCodes.Status201Created)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<ActionResult<ProductVo>> Create(ProductVo vo)
+	public async Task<ActionResult<ProductVo>> Create([FromBody] ProductVo vo)
 	{
 		var validationResult = await _validator.ValidateAsync(vo);
 
-		if (!validationResult.IsValid) return BadRequest(ModelState);
+		if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
 		var product = await _productRepository.Create(vo);
-		return Created(new Uri(Request.Path.ToString() + product.Id), product);
+		return Created(new Uri(Request.Path + product.Id), product);
 	}
 
 	[HttpPut]
@@ -55,13 +55,13 @@ public sealed class ProductController : ControllerBase
 	{
 		var validationResult = await _validator.ValidateAsync(vo);
 
-		if (!validationResult.IsValid) return BadRequest(ModelState);
+		if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
 		var product = await _productRepository.Update(vo);
 		return Ok(product);
 	}
 
-	[HttpDelete("{id}")]
+	[HttpDelete("{id:long}")]
 	public async Task<ActionResult> Delete(long id)
 	{
 		var status = await _productRepository.Delete(id);
