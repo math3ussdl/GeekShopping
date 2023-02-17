@@ -1,13 +1,12 @@
 using GeekShopping.IdentityServer;
-using GeekShopping.IdentityServer.Data;
+using GeekShopping.IdentityServer.Initializer;
+using GeekShopping.IdentityServer.Initializer.Interfaces;
 using GeekShopping.IdentityServer.Models;
+using GeekShopping.IdentityServer.Models.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
@@ -17,9 +16,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>()
   .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+
 builder.Services.AddRazorPages();
 
-var identityBuilder = builder.Services
+builder.Services
   .AddIdentityServer(opts =>
     {
       opts.Events.RaiseErrorEvents = true;
@@ -30,10 +31,10 @@ var identityBuilder = builder.Services
     }
   )
   .AddInMemoryIdentityResources(IdentityConfiguration.IdentityResources)
+  .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)
   .AddInMemoryClients(IdentityConfiguration.Clients)
-  .AddAspNetIdentity<ApplicationUser>();
-
-identityBuilder.AddDeveloperSigningCredential();
+  .AddAspNetIdentity<ApplicationUser>()
+  .AddDeveloperSigningCredential();
 
 var app = builder.Build();
 
@@ -48,16 +49,20 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+SeedDatabase();
 
+app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
 app.MapRazorPages()
   .RequireAuthorization();
 
-app.MapControllerRoute(
-  name: "default",
-  pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.Run();
+
+void SeedDatabase()
+{
+  using var scope = app.Services.CreateScope();
+  var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+  dbInitializer.Initialize();
+}

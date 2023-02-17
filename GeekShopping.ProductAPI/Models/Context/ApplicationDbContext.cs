@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GeekShopping.ProductAPI.Models.Context;
 
-public sealed class PostgresContext : DbContext
+public sealed class ApplicationDbContext : DbContext
 {
-	public PostgresContext()
+	public ApplicationDbContext()
 	{
 	}
 
-	public PostgresContext(DbContextOptions<PostgresContext> options) : base(options)
+	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
 	{
 	}
 

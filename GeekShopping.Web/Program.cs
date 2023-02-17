@@ -11,9 +11,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddMudServices();
 
-builder.Services.AddSingleton(sp => new HttpClient
+builder.Services.AddSingleton(_ => new HttpClient
 {
-  BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseUrl") ?? "http://localhost:5200")
+  BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceUrls:ProductAPI") ?? "http://localhost:5200")
 });
 
 builder.Services.AddScoped<IProductService, ProductService>();

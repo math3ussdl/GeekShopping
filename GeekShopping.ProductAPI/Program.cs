@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DbConnection");
-builder.Services.AddDbContext<PostgresContext>(opts => opts.UseNpgsql(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseNpgsql(connectionString));
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var mapper = MappingConfig.RegisterMaps().CreateMapper();
@@ -32,7 +32,7 @@ builder.Services.AddSwaggerGen(s =>
 builder.Services.AddCors(policy =>
 {
 	policy.AddPolicy("_myAllowSpecificOrigins", c => c.WithOrigins("http://localhost:5077/")
-		.SetIsOriginAllowed(h => true)
+		.SetIsOriginAllowed(_ => true)
 		.AllowAnyMethod()
 		.AllowAnyHeader()
 		.AllowCredentials());
@@ -46,6 +46,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

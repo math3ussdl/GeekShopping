@@ -8,10 +8,10 @@ namespace GeekShopping.ProductAPI.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-	private readonly PostgresContext _context;
+	private readonly ApplicationDbContext _context;
 	private readonly IMapper _mapper;
 
-	public ProductRepository(PostgresContext context, IMapper mapper)
+	public ProductRepository(ApplicationDbContext context, IMapper mapper)
 	{
 		_context = context;
 		_mapper = mapper;

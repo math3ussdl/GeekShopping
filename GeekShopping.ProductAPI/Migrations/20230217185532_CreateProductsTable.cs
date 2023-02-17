@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -8,11 +9,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GeekShopping.ProductAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class SeedProductTable : Migration
+    public partial class CreateProductsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "product",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    price = table.Column<decimal>(type: "numeric", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: false),
+                    categoryname = table.Column<string>(name: "category_name", type: "text", nullable: false),
+                    imageurl = table.Column<string>(name: "image_url", type: "text", nullable: false),
+                    createdat = table.Column<DateTime>(name: "created_at", type: "timestamp without time zone", nullable: false),
+                    updatedat = table.Column<DateTime>(name: "updated_at", type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_product", x => x.id);
+                });
+
             migrationBuilder.InsertData(
                 table: "product",
                 columns: new[] { "id", "category_name", "created_at", "description", "image_url", "name", "price", "updated_at" },
@@ -27,20 +47,8 @@ namespace GeekShopping.ProductAPI.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "product",
-                keyColumn: "id",
-                keyValue: 1L);
-
-            migrationBuilder.DeleteData(
-                table: "product",
-                keyColumn: "id",
-                keyValue: 2L);
-
-            migrationBuilder.DeleteData(
-                table: "product",
-                keyColumn: "id",
-                keyValue: 3L);
+            migrationBuilder.DropTable(
+                name: "product");
         }
     }
 }
