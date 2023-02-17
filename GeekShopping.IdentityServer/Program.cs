@@ -1,3 +1,4 @@
+using GeekShopping.IdentityServer;
 using GeekShopping.IdentityServer.Data;
 using GeekShopping.IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
@@ -13,9 +14,26 @@ builder.Services.AddDbContext<ApplicationDbContext>(opts =>
   opts.UseNpgsql(connectionString));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-  .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
 
 builder.Services.AddRazorPages();
+
+var identityBuilder = builder.Services
+  .AddIdentityServer(opts =>
+    {
+      opts.Events.RaiseErrorEvents = true;
+      opts.Events.RaiseInformationEvents = true;
+      opts.Events.RaiseFailureEvents = true;
+      opts.Events.RaiseSuccessEvents = true;
+      opts.EmitStaticAudienceClaim = true;
+    }
+  )
+  .AddInMemoryIdentityResources(IdentityConfiguration.IdentityResources)
+  .AddInMemoryClients(IdentityConfiguration.Clients)
+  .AddAspNetIdentity<ApplicationUser>();
+
+identityBuilder.AddDeveloperSigningCredential();
 
 var app = builder.Build();
 
@@ -32,6 +50,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseIdentityServer();
 app.UseAuthorization();
 
 app.MapRazorPages()
