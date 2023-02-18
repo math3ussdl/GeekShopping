@@ -1,6 +1,8 @@
 using FluentValidation;
 using GeekShopping.ProductAPI.Data.ValueObjects;
 using GeekShopping.ProductAPI.Repositories;
+using GeekShopping.ProductAPI.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.ProductAPI.Controllers;
@@ -19,6 +21,7 @@ public sealed class ProductController : ControllerBase
 	}
 
 	[HttpGet]
+	[Authorize]
 	public async Task<ActionResult<IEnumerable<ProductVo>>> FindAll()
 	{
 		var products = await _productRepository.FindAll();
@@ -26,6 +29,7 @@ public sealed class ProductController : ControllerBase
 	}
 
 	[HttpGet("{id:long}")]
+	[Authorize]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
 	public async Task<ActionResult<ProductVo>> FindById(long id)
@@ -38,9 +42,10 @@ public sealed class ProductController : ControllerBase
 	}
 
 	[HttpPost]
+	[Authorize(Roles = UserRoles.Admin)]
 	[ProducesResponseType(StatusCodes.Status201Created)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
-	public async Task<ActionResult<ProductVo>> Create([FromBody] ProductVo vo)
+	public async Task<ActionResult<ProductVo>> Create(ProductVo vo)
 	{
 		var validationResult = await _validator.ValidateAsync(vo);
 
@@ -51,6 +56,7 @@ public sealed class ProductController : ControllerBase
 	}
 
 	[HttpPut]
+	[Authorize(Roles = UserRoles.Admin)]
 	public async Task<ActionResult<ProductVo>> Update(ProductVo vo)
 	{
 		var validationResult = await _validator.ValidateAsync(vo);
@@ -62,6 +68,7 @@ public sealed class ProductController : ControllerBase
 	}
 
 	[HttpDelete("{id:long}")]
+	[Authorize(Roles = UserRoles.Admin)]
 	public async Task<ActionResult> Delete(long id)
 	{
 		var status = await _productRepository.Delete(id);
